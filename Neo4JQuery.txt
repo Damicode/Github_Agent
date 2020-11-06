@@ -1,0 +1,37 @@
+MATCH (dir:Person)-[:DIRECTED]->(movie:Movie) RETURN DISTINCT dir.name AS Director
+MATCH (dir:Person)-[:DIRECTED]->(movie:Movie)<-[:ACTED_IN]-(dir:Person) RETURN DISTINCT dir.name AS Director, movie.title as MovieTitle
+MATCH (Tom:Person{name:"Tom Hanks"})-[:ACTED_IN]->(movie:Movie) RETURN DISTINCT  movie.title as MovieTitle
+MATCH (Tom:Person{name:"Tom Hanks"})-[:ACTED_IN]->(movie:Movie)<-[:DIRECTED]-(dir:Person) RETURN DISTINCT  movie.title as MovieTitle, dir.name AS Director
+
+
+get all the movies  (condition, movie release after the year of 2000)
+all actors who acted in this movie (age of the actor les then 50 years old)
+
+MATCH(actor:Person)-[:ACTED_IN]->(m:Movie) WHERE (2020-actor.born) < 50 AND m.released > 2000
+WITH DISTINCT 2020-actor.born AS YoungestActor, actor.born AS YearBorn, m.released AS MovieYearReleased, m.title AS MovieTitle, actor.name AS NameOfTheActor
+RETURN MovieTitle ,MovieYearReleased, NameOfTheActor, YearBorn, YoungestActor ORDER BY YoungestActor  ASC
+
+(Identify or get the data type property in person label)
+MATCH(p:Person) WITH [p.name,p.born] as list 
+UNWIND list as value 
+RETURN apoc.meta.type(value)
+
+MATCH(p:Person) RETURN size(p.name), p.name
+MATCH(p:Person) WHERE p.born = toInteger(p.born) 
+Return count(p)
+
+
+MATCH (Tom:Person{name:"Tom Hanks"})-[:ACTED_IN]->(movie:Movie) RETURN DISTINCT  movie.title as MovieTitle, Tom.name AS Name, movie.released AS release ORDER BY release DESC LIMIT 1
+get the latest movie where Tom Hanks acted_in however there could be more then one movie released within the same year,
+ we need to get all of them if there is more then one of the latest year
+
+PROFILE MATCH (Tom:Person{name:"Tom Hanks"})-[:ACTED_IN]->(movie:Movie) WITH  movie.title as MovieTitle, Tom.name AS Name, movie.released AS release ORDER BY release DESC LIMIT 1
+MATCH(Tom:Person{name:"Tom Hanks"})-[:ACTED_IN]->(movie:Movie) WHERE movie.released = release 
+
+RETURN Tom.name AS TOM , movie.released As Release, movie.title As Title
+
+(Optimization)
+KeyWord at NEO4J
+EXPLAIN-PROFILE
+
+  https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/apoc-3.5.0.15-all.jar

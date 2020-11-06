@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+    <head>
+<title>Custom Agent with Js code</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    </head>
+
+    <style>
+      body{
+        background-color: cadetblue;
+       
+      }
+      section{
+        
+      }
+        #docRepoName{
+            /* border: solid 1px red; */
+            width: 50%;
+            height: auto;
+            height: auto;
+            margin: auto 25%;
+            
+        }
+
+        #docBranchName{
+            /* border: solid 1px blue; */
+            width: 50%;
+            height: auto;
+            margin: auto 25%;
+            cursor: pointer;
+        }
+
+        #docCommits{
+            /* border: solid 1px green; */
+            width: 100%;
+            height: auto;
+            /* margin: auto 25%; */
+            text-align: center;
+            cursor: pointer;
+        }
+        #dockFiles{
+          width: 100%;
+            height: auto;
+            /* margin: auto 25%; */
+            text-align: center;
+           
+            
+        }
+        li{
+            text-decoration: none;
+            list-style: none;
+        }
+        .full{
+            
+          
+            
+           
+             /* width: 50%;
+            margin-top: 10%;
+            
+            border: solid 1px green; */
+  
+        }
+        
+        .list-group-item:hover{
+
+            color: white;
+            background-color: seagreen;
+        }
+
+        .form-control:hover{
+          border: 2px solid seagreen;
+        }
+        h3{
+            text-align: center;
+            color: seagreen;
+        }
+
+        .title{
+            color: seagreen;
+        }
+    </style>
+
+    <body>
+
+<section class="container full">
+      <!-- Input for for a specific Commit -->
+
+            <h3>GitHub Check out App <sub>Repo</sub></h3>
+      <div class="input-group mb-3 full">
+          <span>
+              <label>UserName:</label>
+          </span>
+        <input type="text" class="form-control" placeholder="Enter your github ID" aria-label="Enter your github ID" aria-describedby="basic-addon2" id="commitID">
+        <span class="full" >
+          <button class="btn btn-success " type="button" id="spanId" onclick="getUserInput()">Commit</button>
+        </span>
+      </div>
+
+      <div class="repoName" id="docRepoName">
+
+      </div>
+
+      <div class="branchName" id="docBranchName">
+
+
+      </div>
+
+      <div class="commits" id="docCommits">
+
+
+      </div>
+
+      
+      <div class="files" id="docFiles">
+
+      </div>
+
+    <!-- end of the specific Commit -->
+</section>
+
+
+<script>
+
+
+
+//                 function getAPIs(endpts) {
+//   var xhttp = new XMLHttpRequest();
+//   xhttp.onreadystatechange = function() {
+//     if (this.readyState == 4 && this.status == 200) {
+//       //document.getElementById("demo").innerHTML = this.responseText;
+// var Endpoints = JSON.parse(this.responseText);
+
+//       console.log( Endpoints)
+//     }
+//   };
+//   xhttp.open("GET", "https://api.github.com/users/CognizantOneDevOps/"+ endpts, true);
+//   xhttp.send();
+// }
+      
+////// Grab the user Input //////////////
+
+var getUserInput= () =>{
+    var selecter = document.querySelector('#commitID');
+    fetchUserName(selecter.value)
+    document.querySelector("#docRepoName").innerHTML=""
+    
+    document.querySelector("#docBranchName").innerHTML=""
+    document.querySelector("#docCommits").innerHTML=""
+    document.querySelector("#docFiles").innerHTML=""
+    //console.log(selecter.value)
+}
+
+function fetchUserName(userNameInput) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      
+ var Endpoints = JSON.parse(this.responseText);
+
+ let h2 = document.createElement("h2")
+h2.innerHTML="Repositories"
+h2.setAttribute('class','title')
+document.querySelector("#docRepoName").appendChild(h2)
+      
+
+
+   for (nameIndex of Endpoints){
+   // console.log( nameIndex)
+    listName(nameIndex.name,userNameInput);
+    
+   }
+
+   
+
+    }
+
+  
+  };
+
+  
+  let URL = "https://api.github.com/users/"+userNameInput+"/repos"
+  xhttp.open("GET", URL, true);
+  xhttp.send();
+
+//console.log("test"+ URL)
+}
+
+
+
+function getBranchesName(id,selectedRepo) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("demo").innerHTML = this.responseText;
+var Endpoints = JSON.parse(this.responseText);
+
+    for (nameIndex of Endpoints){
+       // console.log( nameIndex.name)
+      //  listBranchName(id,selectedRepo,nameIndex.name,nameIndex.commit.sha)
+      listBranchName(nameIndex.name)
+        
+        
+    }
+    
+ 
+      
+    }
+  };
+  
+  let URLFromTheBranchName ="https://api.github.com/repos/"+id+"/"+selectedRepo+"/branches";
+  xhttp.open("GET", URLFromTheBranchName, true);
+  xhttp.send();
+
+
+//console.log(fileURL)
+}
+
+
+function getCommits(id,selectedRepo) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("demo").innerHTML = this.responseText;
+var Endpoints = JSON.parse(this.responseText);
+
+
+var resentCommitId;
+let h2 = document.createElement("h2")
+h2.innerHTML="Recent Commits Id"
+h2.setAttribute('class','title')
+document.querySelector("#docCommits").appendChild(h2);
+
+          for  (let i =0 ; i<=4 ; i++){
+
+            resentCommitId = Endpoints[i].sha; 
+            listCommits(id,selectedRepo,resentCommitId);
+            //console.log(resentCommitId)
+          }
+
+
+  
+      
+    }
+  };
+  
+  let URLFromTheBranchName ="https://api.github.com/repos/"+id+"/"+selectedRepo+"/commits";
+  xhttp.open("GET", URLFromTheBranchName, true);
+  xhttp.send();
+
+
+console.log(URLFromTheBranchName)
+}
+
+
+
+function getFilesBaseOnCommits(id,repo,sha) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      //document.getElementById("demo").innerHTML = this.responseText;
+var Endpoints = JSON.parse(this.responseText);
+
+let h2 = document.createElement("h2")
+h2.innerHTML="Files Modified"
+h2.setAttribute('class','title')
+
+document.querySelector("#docFiles").appendChild(h2);
+
+   for (let i=0 ; i < Endpoints.files.length ; i++){
+
+    listFiles(Endpoints.files[i].filename)
+    //console.log(Endpoints.files[i].filename)
+   }
+    
+   
+      
+    }
+  };
+  
+  let URLFromTheBranchName ="https://api.github.com/repos/"+id+"/"+repo+"/commits/"+sha;
+  xhttp.open("GET", URLFromTheBranchName, true);
+  xhttp.send();
+
+  //console.log(URLFromTheBranchName)
+
+}
+
+
+
+
+
+//////////////////////////////////////
+
+//////////// DOM Manupulation/////////////
+
+function listName(n,id){
+let list = document.createElement("li");
+
+list.innerHTML =n;
+list.setAttribute('class', 'list-group-item');
+
+
+let element = document.querySelector("#docRepoName").appendChild(list)
+//console.log("from listName : " + n)
+
+element.addEventListener("click",function(e){
+
+let nameOfTheRepo = e.target.innerText;
+getBranchesName(id,nameOfTheRepo);
+getCommits(id,nameOfTheRepo);
+
+//console.log(id +":" + nameOfTheRepo)
+
+//document.querySelector("#docRepoName").innerHTML=""
+    
+    document.querySelector("#docBranchName").innerHTML=""
+    document.querySelector("#docCommits").innerHTML=""
+    document.querySelector("#docFiles").innerHTML=""
+    //alert( nameOfTheRepo)
+
+})
+
+
+}
+
+// ,,sha
+
+
+function listBranchName(branchSelected){
+let list = document.createElement("li");
+
+list.innerHTML = "Branch Name : " + branchSelected;
+
+
+let element = document.querySelector("#docBranchName").appendChild(list)
+//console.log("from listName : " + n)
+
+// element.addEventListener("click",function(e){
+
+// let nameOfTheBranch = e.target.innerText;
+// getCommits(id,repo);
+
+// document.querySelector("#docCommits").innerHTML=""
+//     //alert( nameOfTheBranch)
+
+// })
+
+
+}
+
+
+function listCommits(id,repo,sha){
+let list = document.createElement("li");
+
+list.innerHTML = sha;
+list.setAttribute('class', 'list-group-item');
+
+let element = document.querySelector("#docCommits").appendChild(list)
+//console.log("from listName : " + n)
+
+element.addEventListener("click",function(e){
+
+let shaSelected= e.target.innerText;
+//nameIndex.commit.url
+getFilesBaseOnCommits(id,repo,shaSelected);
+document.querySelector("#docFiles").innerHTML=""
+
+ //   alert( sha)
+})
+
+
+}
+
+
+
+
+function listFiles(name){
+let list = document.createElement("li");
+
+list.innerHTML = name;
+list.setAttribute('class', 'list-group-item');
+
+let element = document.querySelector("#docFiles").appendChild(list)
+
+
+
+}
+
+
+
+
+
+///////////////End of DOM Manupulation/////////////////
+
+
+
+
+////////// Get All the Files /////////////////
+
+
+
+//setTimeout(function(){
+
+//}, 500);
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////
+
+
+</script>
+
+    </body>
+</html>
